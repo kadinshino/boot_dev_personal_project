@@ -1,13 +1,13 @@
 """
-CLI Command Handler - Extracted from main.py
-
-Handles all CLI operations in a clean, organized way.
-Each analysis type has its own focused handler.
+Fixed CLI Command Handler - All Import Issues Resolved
+====================================================
+Matches exactly with the actual function names in the analyzer modules
 """
 
 import argparse
 from pathlib import Path
 from typing import Dict, Any
+import json
 
 
 class CLIHandler:
@@ -39,6 +39,7 @@ class CLIHandler:
         mode_group.add_argument("--legacy", metavar="PATH", help="Legacy codebase analysis")
         mode_group.add_argument("--team", metavar="PATH", help="Team collaboration check")
         mode_group.add_argument("--install-hooks", metavar="PATH", help="Install git hooks")
+        mode_group.add_argument("--pre-commit", metavar="PATH", help="Pre-commit hook analysis (internal)")
         
         # Output options
         parser.add_argument("--json", action="store_true", help="JSON output")
@@ -61,6 +62,8 @@ class CLIHandler:
             return TeamAnalysisCommand().execute(args)
         elif args.install_hooks:
             return InstallHooksCommand().execute(args)
+        elif args.pre_commit:
+            return PreCommitCommand().execute(args)
         else:
             print("❌ No command specified. Use --help for options.")
             return 1
@@ -87,7 +90,7 @@ class BaseCommand:
 
 
 class BasicAnalysisCommand(BaseCommand):
-    """Handles basic code analysis."""
+    """Handles basic code analysis - FIXED IMPORTS."""
     
     def execute(self, args) -> int:
         """Execute basic analysis."""
@@ -95,15 +98,31 @@ class BasicAnalysisCommand(BaseCommand):
             project_path = self.validate_path(args.analyze)
             print(f"🔍 Running basic analysis on: {project_path}")
             
-            from functions.code_analyzer import analyze_project, summarize_results
+            # FIXED: Use the correct function names from code_analyzer.py
+            from functions.code_analyzer import analyze_project, format_summary
             
             results = analyze_project(str(project_path))
             
             if args.json:
-                import json
-                output = json.dumps(results, indent=2, default=str)
+                # Convert issues to dict for JSON serialization
+                json_results = {
+                    'issues': [
+                        {
+                            'file': issue.file,
+                            'line': issue.line,
+                            'type': issue.type,
+                            'message': issue.message,
+                            'severity': issue.severity
+                        } for issue in results.get('issues', [])
+                    ],
+                    'stats': results.get('stats', {}),
+                    'project_path': results.get('project_path', ''),
+                    'files_analyzed': results.get('files_analyzed', 0)
+                }
+                output = json.dumps(json_results, indent=2)
             else:
-                output = summarize_results(results)
+                # FIXED: Use format_summary instead of summarize_results
+                output = format_summary(results)
             
             print(output)
             
@@ -115,8 +134,8 @@ class BasicAnalysisCommand(BaseCommand):
             errors = [i for i in issues if getattr(i, 'severity', 'info') == 'error']
             return 1 if errors else 0
             
-        except ImportError:
-            print("❌ Code analyzer module not available")
+        except ImportError as e:
+            print(f"❌ Code analyzer module not available: {e}")
             return 1
         except Exception as e:
             print(f"❌ Analysis failed: {e}")
@@ -124,7 +143,7 @@ class BasicAnalysisCommand(BaseCommand):
 
 
 class SecurityAnalysisCommand(BaseCommand):
-    """Handles security analysis."""
+    """Handles security analysis - FIXED IMPORTS."""
     
     def execute(self, args) -> int:
         """Execute security analysis."""
@@ -132,14 +151,26 @@ class SecurityAnalysisCommand(BaseCommand):
             project_path = self.validate_path(args.security)
             print(f"🔒 Running security analysis on: {project_path}")
             
+            # FIXED: Use correct imports from security_scanner.py
             from functions.security_scanner import SecurityScanner, create_security_report
             
             scanner = SecurityScanner()
-            results = scanner.scan_project(project_path)
+            results = scanner.scan_project(str(project_path))
             
             if args.json:
-                import json
-                output = json.dumps(results, indent=2, default=str)
+                # Convert SecurityIssue objects to dicts for JSON
+                json_results = dict(results)
+                json_results['security_issues'] = [
+                    {
+                        'file': issue.file,
+                        'line': issue.line,
+                        'type': issue.type,
+                        'message': issue.message,
+                        'severity': issue.severity,
+                        'cwe_id': issue.cwe_id
+                    } for issue in results.get('security_issues', [])
+                ]
+                output = json.dumps(json_results, indent=2)
             else:
                 output = create_security_report(results)
             
@@ -159,8 +190,8 @@ class SecurityAnalysisCommand(BaseCommand):
             else:
                 return 0
                 
-        except ImportError:
-            print("❌ Security scanner not available")
+        except ImportError as e:
+            print(f"❌ Security scanner not available: {e}")
             return 1
         except Exception as e:
             print(f"❌ Security analysis failed: {e}")
@@ -168,7 +199,7 @@ class SecurityAnalysisCommand(BaseCommand):
 
 
 class ComprehensiveAnalysisCommand(BaseCommand):
-    """Handles comprehensive analysis."""
+    """Handles comprehensive analysis - FIXED IMPORTS."""
     
     def execute(self, args) -> int:
         """Execute comprehensive analysis."""
@@ -176,33 +207,25 @@ class ComprehensiveAnalysisCommand(BaseCommand):
             project_path = self.validate_path(args.comprehensive)
             print(f"🚀 Running comprehensive analysis on: {project_path}")
             
-            # Import all analyzers
-            from functions.code_analyzer import analyze_project
-            from functions.security_scanner import SecurityScanner
-            from functions.dependency_analyzer import DependencyAnalyzer
+            # FIXED: Use the analysis controller instead of direct imports
+            from functions.analysis_controller import AnalysisController
             
-            # Run all analyses
-            results = {"comprehensive": True}
+            controller = AnalysisController()
             
-            # Code quality
-            print("📋 Code quality...")
-            code_results = analyze_project(str(project_path))
-            results.update(code_results)
+            # Define enabled modules for comprehensive analysis
+            enabled_modules = {
+                'code_analyzer': True,
+                'security_scanner': True,
+                'dependency_analyzer': True,
+                'codebase_discovery': False,  # Optional
+                'git_integration': False      # Optional
+            }
             
-            # Security
-            print("🔒 Security scan...")
-            security_results = SecurityScanner().scan_project(project_path)
-            results["security"] = security_results
+            # Run analysis
+            results = controller.run_analysis_sync(str(project_path), enabled_modules)
             
-            # Dependencies
-            print("📦 Dependencies...")
-            dep_results = DependencyAnalyzer(project_path).analyze_dependencies()
-            results["dependencies"] = dep_results
-            
-            # Format output
             if args.json:
-                import json
-                output = json.dumps(results, indent=2, default=str)
+                output = results.to_json()
             else:
                 output = self._format_comprehensive_report(results)
             
@@ -220,47 +243,54 @@ class ComprehensiveAnalysisCommand(BaseCommand):
             print(f"❌ Comprehensive analysis failed: {e}")
             return 1
     
-    def _format_comprehensive_report(self, results: Dict[str, Any]) -> str:
+    def _format_comprehensive_report(self, results) -> str:
         """Format comprehensive results."""
         lines = []
         lines.append("🚀 COMPREHENSIVE ANALYSIS REPORT")
         lines.append("=" * 50)
         
-        # Code quality summary
-        issues = results.get('issues', [])
-        lines.append(f"📊 Code Issues: {len(issues)}")
+        if not results.success:
+            lines.append(f"❌ Analysis failed: {results.error_message}")
+            return "\n".join(lines)
         
-        # Security summary
-        security = results.get('security', {})
-        vuln_count = security.get('total_vulnerabilities', 0)
-        lines.append(f"🔒 Security Vulnerabilities: {vuln_count}")
+        # Summary
+        lines.append(f"📊 Total Issues: {len(results.issues)}")
+        lines.append(f"🔧 Modules Used: {', '.join(results.modules_used or [])}")
+        lines.append("")
         
-        # Dependency summary
-        deps = results.get('dependencies', {})
-        dep_count = len(deps.get('all_dependencies', {}))
-        lines.append(f"📦 Dependencies: {dep_count}")
+        # Issue breakdown by severity
+        if results.issues:
+            severity_counts = {}
+            for issue in results.issues:
+                severity = getattr(issue, 'severity', 'unknown')
+                severity_counts[severity] = severity_counts.get(severity, 0) + 1
+            
+            lines.append("📋 ISSUE BREAKDOWN:")
+            for severity, count in severity_counts.items():
+                lines.append(f"  • {severity.title()}: {count}")
+        else:
+            lines.append("🎉 No issues found!")
         
         return "\n".join(lines)
     
-    def _calculate_exit_code(self, results: Dict[str, Any]) -> int:
+    def _calculate_exit_code(self, results) -> int:
         """Calculate exit code based on all results."""
-        # Check for critical security issues
-        security = results.get('security', {})
-        critical = security.get('vulnerability_counts', {}).get('critical', 0)
-        if critical > 0:
-            return 2
-        
-        # Check for code errors
-        issues = results.get('issues', [])
-        errors = [i for i in issues if getattr(i, 'severity', 'info') == 'error']
-        if errors:
+        if not results.success:
             return 1
-            
+        
+        # Check for critical issues
+        for issue in results.issues:
+            severity = getattr(issue, 'severity', 'info')
+            if severity == 'critical':
+                return 2
+            elif severity == 'error':
+                return 1
+                
         return 0
 
 
 class LegacyAnalysisCommand(BaseCommand):
-    """Handles codebase discovery analysis."""
+    """Handles codebase discovery analysis - FIXED IMPORTS."""
     
     def execute(self, args) -> int:
         """Execute codebase discovery analysis."""
@@ -268,13 +298,12 @@ class LegacyAnalysisCommand(BaseCommand):
             project_path = self.validate_path(args.legacy)
             print(f"🗺️ Running codebase discovery on: {project_path}")
             
-            # Use the new simplified API
+            # FIXED: Use correct imports from codebase_discovery.py
             from functions.codebase_discovery import analyze_codebase, create_discovery_report
             
             results = analyze_codebase(str(project_path))
             
             if args.json:
-                import json
                 from dataclasses import asdict
                 output = json.dumps(asdict(results), indent=2, default=str)
             else:
@@ -285,18 +314,18 @@ class LegacyAnalysisCommand(BaseCommand):
             if args.save:
                 self.save_results(output, args.save)
             
-            # Exit code based on analysis success (no more "risk areas" concept)
-            return 0  # Success - discovery doesn't have "critical risks"
+            return 0  # Discovery analysis doesn't have error conditions
             
-        except ImportError:
-            print("❌ Codebase discovery not available")
+        except ImportError as e:
+            print(f"❌ Codebase discovery not available: {e}")
             return 1
         except Exception as e:
             print(f"❌ Codebase discovery failed: {e}")
             return 1
 
+
 class TeamAnalysisCommand(BaseCommand):
-    """Handles team collaboration analysis."""
+    """Handles team collaboration analysis - FIXED IMPORTS."""
     
     def execute(self, args) -> int:
         """Execute team analysis."""
@@ -319,7 +348,6 @@ class TeamAnalysisCommand(BaseCommand):
             team_report = team_reporter.generate_team_report(basic_results)
             
             if args.json:
-                import json
                 output = json.dumps(team_report, indent=2, default=str)
             else:
                 output = self._format_team_report(team_report)
@@ -333,8 +361,8 @@ class TeamAnalysisCommand(BaseCommand):
             status = team_report.get("commit_readiness", {}).get("status")
             return {"blocked": 2, "caution": 1}.get(status, 0)
             
-        except ImportError:
-            print("❌ Git integration not available")
+        except ImportError as e:
+            print(f"❌ Git integration not available: {e}")
             return 1
         except Exception as e:
             print(f"❌ Team analysis failed: {e}")
@@ -349,18 +377,28 @@ class TeamAnalysisCommand(BaseCommand):
         readiness = report.get("commit_readiness", {})
         status = readiness.get("status", "unknown")
         reason = readiness.get("reason", "No reason")
+        action = readiness.get("action", "No action")
         
         status_icons = {"ready": "✅", "caution": "⚠️", "blocked": "🚫"}
         icon = status_icons.get(status, "❓")
         
         lines.append(f"{icon} COMMIT STATUS: {status.upper()}")
         lines.append(f"Reason: {reason}")
+        lines.append(f"Action: {action}")
+        
+        # Add recommendations
+        recommendations = report.get("team_recommendations", [])
+        if recommendations:
+            lines.append("")
+            lines.append("📋 RECOMMENDATIONS:")
+            for rec in recommendations:
+                lines.append(f"  • {rec}")
         
         return "\n".join(lines)
 
 
 class InstallHooksCommand(BaseCommand):
-    """Handles git hook installation."""
+    """Handles git hook installation - FIXED IMPORTS."""
     
     def execute(self, args) -> int:
         """Execute hook installation."""
@@ -388,9 +426,35 @@ class InstallHooksCommand(BaseCommand):
                 print("❌ Hook installation failed")
                 return 1
                 
-        except ImportError:
-            print("❌ Git integration not available")
+        except ImportError as e:
+            print(f"❌ Git integration not available: {e}")
             return 1
         except Exception as e:
             print(f"❌ Hook installation failed: {e}")
             return 1
+
+
+class PreCommitCommand(BaseCommand):
+    """Handles pre-commit hook analysis - NEW COMMAND."""
+    
+    def execute(self, args) -> int:
+        """Execute pre-commit analysis (called by git hooks)."""
+        try:
+            project_path = self.validate_path(args.pre_commit)
+            
+            from functions.git_integration import analyze_for_commit
+            
+            # Run pre-commit analysis with default config
+            config = {
+                "security_enabled": True,
+                "block_on_errors": False  # Don't block on regular errors in hooks
+            }
+            
+            return analyze_for_commit(str(project_path), config)
+                
+        except ImportError as e:
+            print(f"⚠️ Pre-commit analysis not available: {e}")
+            return 0  # Don't block commits on import errors
+        except Exception as e:
+            print(f"⚠️ Pre-commit analysis failed: {e}")
+            return 0  # Don't block commits on analysis failures
