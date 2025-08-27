@@ -36,8 +36,8 @@ A comprehensive Python development tool that provides code quality analysis, sec
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/code-analyzer-pro.git
-cd code-analyzer-pro
+git clone https://github.com/kadinshino/boot_dev_personal_project.git
+cd boot_dev_personal_project
 
 # Install using uv (handles everything automatically)
 uv sync
@@ -172,34 +172,6 @@ uv run python main.py --analyze /path/to/project --verbose
 
 ---
 
-## 🔧 Development Setup
-
-### Using uv (Recommended)
-
-```bash
-# Clone and setup development environment
-git clone https://github.com/yourusername/code-analyzer-pro.git
-cd code-analyzer-pro
-
-# Install with development dependencies
-uv sync --extra development
-
-# Run tests
-uv run pytest
-
-# Run with coverage
-uv run pytest --cov
-
-# Format code
-uv run black .
-
-# Type checking
-uv run mypy functions/ gui/ cli/
-
-# Linting
-uv run flake8
-```
-
 ### Pre-commit Hooks
 
 ```bash
@@ -284,32 +256,6 @@ export CODE_ANALYZER_DEBUG=1
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-### Development Workflow
-
-```bash
-# Fork the repository and clone your fork
-git clone https://github.com/yourusername/code-analyzer-pro.git
-cd code-analyzer-pro
-
-# Set up development environment
-uv sync --extra development
-
-# Create a feature branch
-git checkout -b feature/amazing-feature
-
-# Make changes and run tests
-uv run pytest
-uv run black .
-uv run flake8
-
-# Commit and push
-git commit -m "Add amazing feature"
-git push origin feature/amazing-feature
-```
 
 ### Code Standards
 
@@ -427,7 +373,7 @@ This project is licensed under the **MIT License** - see [LICENSE.md](LICENSE.md
 
 ## 🙏 Acknowledgments
 
-**Created by:** The Enhanced Code Analyzer Team  
+**Created by:** kadin shino
 **Inspired by:** Modern DevOps practices and the need for comprehensive code quality tools  
 
 ### Dependencies
@@ -437,16 +383,6 @@ We stand on the shoulders of giants:
 - **Tkinter** - Cross-platform GUI framework
 - **AST Module** - Python's Abstract Syntax Tree parsing
 - **Pathlib** - Modern filesystem operations
-
----
-
-## 📞 Support & Contact
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/code-analyzer-pro/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/code-analyzer-pro/discussions)
-- **Email**: support@code-analyzer-pro.dev
-- **Documentation**: [Full Documentation](https://code-analyzer-pro.readthedocs.io)
-
 ---
 
 *Enhanced Code Analyzer Pro - Making code quality accessible to everyone.*
