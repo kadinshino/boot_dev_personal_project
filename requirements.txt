@@ -1,0 +1,30 @@
+# Enhanced Code Analyzer - Requirements
+# Core dependencies for the existing code analyzer
+
+# =============================================================================
+# CURRENT DEPENDENCIES
+# =============================================================================
+
+# No external dependencies required - uses Python standard library only
+# The analyzer is designed to work with minimal dependencies
+
+# Standard library modules used:
+# - ast (Abstract Syntax Tree parsing)
+# - pathlib (File system operations)
+# - tkinter (GUI interface)
+# - threading (Async analysis)
+# - subprocess (Git operations)
+# - json (Data serialization)
+# - re (Regular expressions)
+# - dataclasses (Data structures)
+# - datetime (Timestamps)
+# - typing (Type hints)
+
+# =============================================================================
+# INSTALLATION
+# =============================================================================
+
+# To run the Enhanced Code Analyzer:
+# python main.py
+
+# No pip install required - all dependencies are built into Python 3.8+
