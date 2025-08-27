@@ -1,0 +1,136 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "code-analyzer-pro"
+version = "1.0.0"
+description = "Comprehensive Python code analysis suite with security scanning and team collaboration features"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+keywords = ["code-analysis", "security", "python", "static-analysis", "code-quality", "git-hooks", "team-tools"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Security",
+    "Topic :: Software Development :: Testing",
+]
+requires-python = ">=3.8"
+
+# Core dependencies (always required)
+dependencies = [
+    # GUI framework (optional on some systems)
+    "tkinter-compat>=0.1.0; platform_system=='Linux'",  # Linux may need separate tkinter
+    # No other hard dependencies - tool works with just Python standard library
+]
+
+# Optional dependencies for enhanced features
+[project.optional-dependencies]
+security = [
+    # Currently using built-in security scanning - no external deps needed
+]
+
+coverage = [
+    "pytest-cov>=4.0.0",  # For running coverage analysis
+    "coverage>=7.0.0",    # For coverage data processing
+]
+
+development = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",      # Code formatting
+    "flake8>=6.0.0",      # Linting
+    "mypy>=1.0.0",        # Type checking
+]
+
+full = [
+    # Include all optional dependencies
+    "pytest-cov>=4.0.0",
+    "coverage>=7.0.0",
+]
+
+# Entry points for command-line usage
+[project.scripts]
+code-analyzer = "main:main"
+analyze-code = "main:main"
+
+# URLs for the project
+[project.urls]
+Homepage = "https://github.com/yourusername/code-analyzer-pro"
+Documentation = "https://github.com/yourusername/code-analyzer-pro#readme"
+Repository = "https://github.com/yourusername/code-analyzer-pro.git"
+Issues = "https://github.com/yourusername/code-analyzer-pro/issues"
+
+# Tool configuration
+[tool.setuptools]
+packages = ["functions", "gui", "configs"]
+
+[tool.setuptools.package-data]
+"*" = ["*.py", "*.json", "*.md"]
+
+# Black code formatter configuration
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+extend-exclude = '''
+/(
+    # directories
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# Pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = [
+    "--cov=functions",
+    "--cov=gui", 
+    "--cov=configs",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+
+# MyPy type checking configuration
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["functions", "gui", "configs"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
