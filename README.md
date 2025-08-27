@@ -75,7 +75,7 @@ The application follows a clean **MVC-inspired architecture** with proper separa
 
 ```bash
 # Clone the repository
-git clone https://github.com/kadinshino/boot_dev_capstone_project.git
+git clone https://github.com/kadinshino/boot_dev_personal_project.git
 cd enhanced-code-analyzer
 
 # Install dependencies (minimal - uses standard library)
@@ -143,7 +143,7 @@ python -m functions.dependency_analyzer ./project_path
 ## 🗂️ Project Structure
 
 ```
-enhanced-code-analyzer/
+boot_dev_personal_project/  #code analyzer
 │
 ├── main.py                      # Application entry point
 ├── LICENSE                      # MIT license
@@ -205,91 +205,6 @@ python main.py --team ./my_project
 
 ---
 
-## 🧩 Extending the Analyzer
-
-### **Adding New Analysis Modules**
-
-1. **Create Analysis Function** in `functions/`:
-```python
-def analyze_my_feature(project_path: str) -> Dict[str, Any]:
-    """Analyze some specific aspect of the codebase."""
-    # Your analysis logic here
-    return {"results": [], "issues": []}
-```
-
-2. **Register in Controller** (`analysis_controller.py`):
-```python
-def _discover_modules(self) -> Dict[str, bool]:
-    modules = {
-        # existing modules...
-        "my_feature": "functions.my_feature_analyzer"
-    }
-    # Test import availability...
-```
-
-3. **Add GUI Integration** in setup tab configuration.
-
-### **Custom Report Templates**
-Modify `results_tab.py` and `ResultsFormatter` class to add new output formats.
-
----
-
-## 📚 Documentation
-
-- [Architecture Guide](docs/architecture.md) - System design and patterns
-- [User Manual](docs/user-guide.md) - Complete usage instructions  
-- [API Reference](docs/api-reference.md) - Function and class documentation
-- [Contributing Guide](CONTRIBUTING.md) - Development guidelines
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-1. **Fork the repository**
-2. **Create feature branch**: `git checkout -b feature/my-feature`
-3. **Make changes** following the existing architecture patterns
-4. **Add tests** for new functionality
-5. **Update documentation** as needed
-6. **Submit pull request** with clear description
-
-### **Development Setup**
-```bash
-# Clone your fork
-git clone https://github.com/your-username/enhanced-code-analyzer.git
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-python -m pytest tests/
-```
-
----
-
-## 🗓️ Roadmap
-
-### **Planned Features**
-- 🔊 **Plugin System** - Third-party analyzer integration
-- 🌐 **Web Interface** - Browser-based analysis dashboard
-- 📈 **Trend Analysis** - Track code quality over time
-- 🔄 **CI/CD Integration** - GitHub Actions, Jenkins support
-- 📱 **Mobile Reports** - Responsive report viewing
-- 🎨 **Custom Themes** - UI customization options
-
-### **Language Support**
-- 🐍 **Python** (current)
-- ☕ **Java** (planned)
-- 🟨 **JavaScript/TypeScript** (planned)
-- 🚀 **Rust** (planned)
-
----
-
 ## 📄 License
 
 This project is licensed under the **MIT License** - see [LICENSE](LICENSE) for details.
@@ -299,7 +214,7 @@ This project is licensed under the **MIT License** - see [LICENSE](LICENSE) for 
 ## 🙏 Credits
 
 **Created by:** [Kadin Shino]  
-**GitHub:** [github.com/kadinshino/enhanced-code-analyzer]  
+**GitHub:** [github.com/kadinshino/boot_dev_personal_project]  
 
 ### **Acknowledgments**
 - Python AST module for code parsing capabilities
