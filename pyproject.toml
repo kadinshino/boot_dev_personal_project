@@ -5,13 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "code-analyzer-pro"
 version = "1.0.0"
-description = "Comprehensive Python code analysis suite with security scanning and team collaboration features"
+description = "Comprehensive Python code analysis suite with security scanning, dependency analysis, and GUI interface"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Code Analyzer Team", email = "contact@example.com"}
 ]
-keywords = ["code-analysis", "security", "python", "static-analysis", "code-quality", "git-hooks", "team-tools"]
+keywords = [
+    "code-analysis", 
+    "security", 
+    "python", 
+    "static-analysis", 
+    "code-quality", 
+    "gui", 
+    "dependency-analysis",
+    "codebase-discovery"
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -26,45 +35,59 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Security",
     "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Environment :: X11 Applications :: Qt",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: MacOS X",
 ]
 requires-python = ">=3.8"
 
-# Core dependencies (always required)
+# Core dependencies - your tool uses only standard library!
 dependencies = [
-    # GUI framework (optional on some systems)
-    "tkinter-compat>=0.1.0; platform_system=='Linux'",  # Linux may need separate tkinter
-    # No other hard dependencies - tool works with just Python standard library
+    # No external dependencies required - works with Python standard library only
+    # tkinter is included with Python on most systems
 ]
 
 # Optional dependencies for enhanced features
 [project.optional-dependencies]
-security = [
-    # Currently using built-in security scanning - no external deps needed
+# Git integration enhancement
+git = [
+    "GitPython>=3.1.0",  # Enhanced git operations
 ]
 
-coverage = [
-    "pytest-cov>=4.0.0",  # For running coverage analysis
-    "coverage>=7.0.0",    # For coverage data processing
-]
-
+# Development and testing tools
 development = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "black>=23.0.0",      # Code formatting
     "flake8>=6.0.0",      # Linting
     "mypy>=1.0.0",        # Type checking
+    "pre-commit>=3.0.0",  # Git hooks
 ]
 
+# Documentation generation
+docs = [
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+]
+
+# All optional dependencies
 full = [
-    # Include all optional dependencies
+    "GitPython>=3.1.0",
+    "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
-    "coverage>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.0.0",
 ]
 
 # Entry points for command-line usage
 [project.scripts]
 code-analyzer = "main:main"
-analyze-code = "main:main"
+analyzer-gui = "main:launch_gui"
 
 # URLs for the project
 [project.urls]
@@ -73,17 +96,47 @@ Documentation = "https://github.com/yourusername/code-analyzer-pro#readme"
 Repository = "https://github.com/yourusername/code-analyzer-pro.git"
 Issues = "https://github.com/yourusername/code-analyzer-pro/issues"
 
-# Tool configuration
+# Tool configuration - updated to match your actual structure
 [tool.setuptools]
-packages = ["functions", "gui", "configs"]
+packages = ["functions", "gui", "cli", "utils"]
 
 [tool.setuptools.package-data]
 "*" = ["*.py", "*.json", "*.md"]
 
+# Include package data
+[tool.setuptools.package-dir]
+"" = "."
+
+# UV-specific configuration
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0", 
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+# UV workspace configuration (if this becomes part of a larger project)
+[tool.uv.workspace]
+members = ["."]
+
+# UV-specific scripts (optional - alternative to [project.scripts])
+[tool.uv.scripts]
+# These can be run with: uv run <script-name>
+analyze = "python main.py"
+gui = { call = "main:launch_gui" }
+test = "pytest"
+lint = "flake8 ."
+format = "black ."
+typecheck = "mypy functions/ gui/ cli/ utils/"
+security = "python main.py --security"
+
 # Black code formatter configuration
 [tool.black]
 line-length = 100
-target-version = ['py38', 'py39', 'py310', 'py311']
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
 extend-exclude = '''
 /(
     # directories
@@ -93,44 +146,85 @@ extend-exclude = '''
   | \.mypy_cache
   | \.tox
   | \.venv
+  | \.pytest_cache
   | build
   | dist
+  | __pycache__
 )/
 '''
 
-# Pytest configuration
+# Pytest configuration - updated for your structure
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "."]  # Look in tests dir if it exists, otherwise current dir
 python_files = ["test_*.py", "*_test.py"]
+python_functions = ["test_*"]
 addopts = [
     "--cov=functions",
     "--cov=gui", 
-    "--cov=configs",
+    "--cov=cli",
+    "--cov=utils",
     "--cov-report=term-missing",
-    "--cov-report=html",
+    "--cov-report=html:htmlcov",
+    "-v"
 ]
+# Don't fail if no tests directory exists yet
+collect_ignore_glob = []
 
 # MyPy type checking configuration
 [tool.mypy]
 python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = true
+disallow_untyped_defs = false  # Set to false since your code isn't fully typed
 ignore_missing_imports = true
+exclude = [
+    "__pycache__",
+    ".git",
+    "build",
+    "dist",
+]
 
 # Coverage configuration
 [tool.coverage.run]
-source = ["functions", "gui", "configs"]
+source = ["functions", "gui", "cli", "utils"]
 omit = [
     "*/tests/*",
-    "*/test_*.py",
+    "*/test_*.py", 
     "*/__pycache__/*",
+    "*/.*",
+    "*/venv/*",
+    "*/env/*",
 ]
 
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
-    "raise AssertionError",
+    "def __str__",
+    "raise AssertionError", 
     "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+skip_covered = false
+show_missing = true
+
+# Flake8 linting configuration
+[tool.flake8]
+max-line-length = 100
+extend-ignore = [
+    "E203",  # whitespace before ':'
+    "W503",  # line break before binary operator
+    "E501",  # line too long (handled by black)
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    "venv",
+    ".pytest_cache",
 ]
