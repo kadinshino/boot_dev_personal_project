@@ -156,11 +156,11 @@ class IssuesTab(ttk.Frame):
         stats_label.pack()
     
     def display_issues(self, issues: List[Any]):
-        """Display new issues - delegates formatting to controller."""
+        """Display new issues - delegates formatting to specialized formatter."""
         self.all_issues = issues or []
         
-        # Update filter options using business logic
-        from functions.analysis_controller import get_severity_options
+        # FIXED: Import from correct module  
+        from functions.issues_formatter import get_severity_options
         severity_options = get_severity_options(self.all_issues)
         self.severity_filter.filter_combo.configure(values=severity_options)
         
@@ -171,8 +171,8 @@ class IssuesTab(ttk.Frame):
         self._update_statistics()
     
     def _apply_filters(self):
-        """Apply current filters - delegates to business logic."""
-        from functions.analysis_controller import filter_issues
+        """Apply current filters - delegates to specialized formatter."""
+        from functions.issues_formatter import filter_issues
         
         # Get current filter values
         severity = self.severity_filter.get_value()
@@ -188,8 +188,8 @@ class IssuesTab(ttk.Frame):
         self._display_filtered_issues()
     
     def _display_filtered_issues(self):
-        """Display filtered issues - delegates formatting to controller."""
-        from functions.analysis_controller import format_issues_for_display
+        """Display filtered issues - delegates formatting to specialized formatter."""
+        from functions.issues_formatter import format_issues_for_display
         
         formatted = format_issues_for_display(self.filtered_issues)
         self.issues_display.set_content(formatted)
@@ -203,12 +203,12 @@ class IssuesTab(ttk.Frame):
             self.issue_count_var.set(f"📊 {len(self.filtered_issues)} of {len(self.all_issues)} issues")
     
     def _update_statistics(self):
-        """Update statistics display - delegates to controller."""
+        """Update statistics display - delegates to specialized formatter."""
         if not self.all_issues:
             self.stats_text.set("No issues to analyze")
             return
         
-        from functions.analysis_controller import get_issue_statistics
+        from functions.issues_formatter import get_issue_statistics
         stats_text = get_issue_statistics(self.all_issues)
         self.stats_text.set(stats_text)
     

@@ -53,15 +53,15 @@ class ResultsTab(ttk.Frame):
         self.results_display.pack(fill="both", expand=True)
     
     def display_results(self, results: AnalysisResults):
-        """Display analysis results - delegates formatting to controller."""
+        """Display analysis results - delegates formatting to specialized formatter."""
         self.current_results = results
         
         if not results or not results.success:
             self.results_display.set_content("❌ No results to display or analysis failed.")
             return
         
-        # SIMPLE: Just get formatted text from the controller
-        from functions.analysis_controller import format_results_for_display
+        # FIXED: Import from the correct module
+        from functions.results_formatter import format_results_for_display
         formatted_text = format_results_for_display(results)
         
         self.results_display.set_content(formatted_text)
@@ -85,8 +85,8 @@ class ResultsTab(ttk.Frame):
         
         if filename:
             try:
-                # Delegate to controller
-                from functions.analysis_controller import save_results_to_file
+                # Delegate to formatter
+                from functions.results_formatter import save_results_to_file
                 save_results_to_file(self.current_results, filename)
                 
                 messagebox.showinfo("Saved", f"Results saved to {Path(filename).name}")

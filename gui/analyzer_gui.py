@@ -32,8 +32,8 @@ class CodeAnalyzerGUI(tk.Tk):
         self.geometry("1200x900")
         self.minsize(1000, 700)
         
-        # Business logic controller (shared across tabs)
-        self.controller = AnalysisController()
+        # Business logic controller (shared across tabs) - PASS WINDOW REFERENCE
+        self.controller = AnalysisController(main_window=self)  # ← ADD main_window=self
         
         # Initialize UI
         self.style_manager = StyleManager(self)
