@@ -26,7 +26,7 @@ A Python development tool that analyzes code quality, security vulnerabilities, 
 ```bash
 # Clone the repository
 git clone https://github.com/kadinshino/boot_dev_personal_project.git
-cd enhanced-code-analyzer
+cd boot_dev_personal_project
 
 # Run the application
 python main.py
