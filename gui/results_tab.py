@@ -1,7 +1,7 @@
 """
-Results Tab Component - Self-Contained Version
-============================================
-No external GUI component dependencies to avoid circular imports
+Results Tab Component - Fixed Import Issues
+==========================================
+Complete file with all necessary imports and classes properly defined
 """
 
 import tkinter as tk
@@ -101,80 +101,118 @@ class SimpleButtonToolbar(ttk.Frame):
 
 
 class ResultsFormatter:
-    """Formats analysis results for display."""
+    """Formats analysis results for display - refactored into smaller functions."""
     
     def format_comprehensive_results(self, results: Dict[str, Any], issues: List[Any]) -> str:
-        """Format results comprehensively."""
-        lines = [
+        """Main formatting method - now delegated to smaller functions."""
+        lines = []
+        
+        # Header section
+        lines.extend(self._format_header(results, issues))
+        
+        # Analysis sections
+        sections_added = 0
+        sections_added += self._add_code_analysis_section(lines, results)
+        sections_added += self._add_security_section(lines, results)
+        sections_added += self._add_dependency_section(lines, results)
+        sections_added += self._add_discovery_section(lines, results)
+        sections_added += self._add_git_section(lines, results)
+        
+        # Footer section
+        lines.extend(self._format_footer(sections_added, issues))
+        
+        return "\n".join(lines)
+    
+    def _format_header(self, results: Dict[str, Any], issues: List[Any]) -> List[str]:
+        """Format the report header."""
+        metadata = results.get('analysis_metadata', {})
+        return [
             "🎯 CODE ANALYSIS RESULTS",
             "=" * 60,
-            f"📁 Project: {results.get('analysis_metadata', {}).get('project_path', 'Unknown')}",
+            f"📁 Project: {metadata.get('project_path', 'Unknown')}",
             f"📊 Total Issues: {len(issues)}",
-            f"🔧 Modules Used: {', '.join(results.get('analysis_metadata', {}).get('modules_used', []))}",
-            f"⏱️  Analysis Time: {results.get('analysis_metadata', {}).get('timestamp', 'Unknown')}",
+            f"🔧 Modules Used: {', '.join(metadata.get('modules_used', []))}",
+            f"⏰ Analysis Time: {metadata.get('timestamp', 'Unknown')}",
             "",
         ]
-        
-        # Add sections based on what was actually analyzed
-        sections_added = 0
-        
-        # Code Analysis section
+    
+    def _add_code_analysis_section(self, lines: List[str], results: Dict[str, Any]) -> int:
+        """Add code analysis section if available."""
         if "total_files" in results:
             lines.extend(self._format_code_analysis_section(results))
-            sections_added += 1
-        
-        # Security Analysis section  
+            return 1
+        return 0
+    
+    def _add_security_section(self, lines: List[str], results: Dict[str, Any]) -> int:
+        """Add security section if available."""
         if "security_scan" in results:
             lines.extend(self._format_security_section(results["security_scan"]))
-            sections_added += 1
-        
-        # Dependency Analysis section
+            return 1
+        return 0
+    
+    def _add_dependency_section(self, lines: List[str], results: Dict[str, Any]) -> int:
+        """Add dependency section if available."""
         if "dependencies" in results:
             lines.extend(self._format_dependency_section(results["dependencies"]))
-            sections_added += 1
-        
-        # Codebase Discovery section
+            return 1
+        return 0
+    
+    def _add_discovery_section(self, lines: List[str], results: Dict[str, Any]) -> int:
+        """Add discovery section if available."""
         if "legacy_analysis" in results:
             lines.extend(self._format_discovery_section(results["legacy_analysis"]))
-            sections_added += 1
-        
-        # Git Integration section
+            return 1
+        return 0
+    
+    def _add_git_section(self, lines: List[str], results: Dict[str, Any]) -> int:
+        """Add git section if available."""
         if "git_info" in results:
             lines.extend(self._format_git_section(results["git_info"]))
-            sections_added += 1
-        
-        # Add summary footer
-        lines.extend([
+            return 1
+        return 0
+    
+    def _format_footer(self, sections_added: int, issues: List[Any]) -> List[str]:
+        """Format the report footer with summary and recommendations."""
+        lines = [
             "=" * 60,
             f"📋 Analysis Complete - {sections_added} modules analyzed",
             f"🐛 Total Issues Found: {len(issues)}",
-        ])
+        ]
         
-        # Add recommendations if no issues found
         if len(issues) == 0:
-            lines.extend([
-                "",
-                "🎉 CONGRATULATIONS!",
-                "No issues were found in your codebase.",
-                "Your code appears to be well-structured and follows good practices!",
-            ])
-        elif len(issues) > 0:
-            # Categorize issues by severity
-            critical = sum(1 for issue in issues if getattr(issue, 'severity', '') == 'critical')
-            high = sum(1 for issue in issues if getattr(issue, 'severity', '') == 'high')
-            warnings = sum(1 for issue in issues if getattr(issue, 'severity', '') in ['warning', 'medium'])
-            
-            lines.append("")
-            lines.append("💡 NEXT STEPS:")
-            if critical > 0:
-                lines.append(f"  🔴 Address {critical} critical security issues immediately")
-            if high > 0:
-                lines.append(f"  🟠 Review {high} high-priority issues")  
-            if warnings > 0:
-                lines.append(f"  🟡 Consider fixing {warnings} warnings for better code quality")
-            lines.append("  📊 Check the Issues tab for detailed information")
+            lines.extend(self._format_success_message())
+        else:
+            lines.extend(self._format_issue_summary(issues))
         
-        return "\n".join(lines)
+        return lines
+    
+    def _format_success_message(self) -> List[str]:
+        """Format success message when no issues found."""
+        return [
+            "",
+            "🎉 CONGRATULATIONS!",
+            "No issues were found in your codebase.",
+            "Your code appears to be well-structured and follows good practices!",
+        ]
+    
+    def _format_issue_summary(self, issues: List[Any]) -> List[str]:
+        """Format issue summary and next steps."""
+        # Categorize issues by severity
+        critical = sum(1 for issue in issues if getattr(issue, 'severity', '') == 'critical')
+        high = sum(1 for issue in issues if getattr(issue, 'severity', '') == 'high')
+        warnings = sum(1 for issue in issues if getattr(issue, 'severity', '') in ['warning', 'medium'])
+        
+        lines = ["", "💡 NEXT STEPS:"]
+        
+        if critical > 0:
+            lines.append(f"  🔴 Address {critical} critical security issues immediately")
+        if high > 0:
+            lines.append(f"  🟠 Review {high} high-priority issues")
+        if warnings > 0:
+            lines.append(f"  🟡 Consider fixing {warnings} warnings for better code quality")
+        
+        lines.append("  📊 Check the Issues tab for detailed information")
+        return lines
     
     def _format_code_analysis_section(self, results: Dict) -> List[str]:
         """Format code analysis section."""
@@ -193,7 +231,7 @@ class ResultsFormatter:
         severity_icons = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵"}
         
         lines = [
-            "🔐 SECURITY ANALYSIS",
+            "🔍 SECURITY ANALYSIS",
             "-" * 30,
             f"🚨 Risk Level: {security_results.get('risk_level', 'Unknown')}",
             f"🛡️ Vulnerabilities: {security_results.get('total_vulnerabilities', 0)}",
@@ -207,7 +245,7 @@ class ResultsFormatter:
             for severity in ['critical', 'high', 'medium', 'low']:
                 count = counts.get(severity, 0)
                 if count > 0:
-                    icon = severity_icons.get(severity, '❓')
+                    icon = severity_icons.get(severity, '⚪')
                     lines.append(f"  {icon} {severity.title()}: {count}")
             lines.append("")
         
@@ -234,38 +272,7 @@ class ResultsFormatter:
             risk = dependency_results.get("risk_assessment", {})
             risk_level = risk.get("risk_level", "UNKNOWN")
             risk_icons = {"MINIMAL": "🟢", "LOW": "🟢", "MEDIUM": "🟡", "HIGH": "🔴", "CRITICAL": "🔴"}
-            icon = risk_icons.get(risk_level, "❓")
-            lines.append(f"{icon} Risk Level: {risk_level}")
-            
-        elif "all_dependencies" in dependency_results:
-            # Legacy format - analyze the dependencies directly
-            all_deps = dependency_results.get("all_dependencies", {})
-            
-            # Count dependencies by type
-            stdlib_count = sum(1 for dep in all_deps.values() 
-                             if isinstance(dep, dict) and dep.get("is_standard_library", False))
-            third_party_count = sum(1 for dep in all_deps.values() 
-                                  if isinstance(dep, dict) and dep.get("is_third_party", False))
-            local_count = sum(1 for dep in all_deps.values() 
-                            if isinstance(dep, dict) and dep.get("is_local", False))
-            
-            lines.extend([
-                f"📊 Total Dependencies: {len(all_deps)}",
-                f"📚 Standard Library: {stdlib_count}",
-                f"🌐 Third-party: {third_party_count}",
-                f"🏠 Local Modules: {local_count}",
-            ])
-            
-            # Calculate basic risk level
-            if third_party_count > 50:
-                risk_level = "HIGH"
-            elif third_party_count > 20:
-                risk_level = "MEDIUM"  
-            else:
-                risk_level = "LOW"
-                
-            risk_icons = {"LOW": "🟢", "MEDIUM": "🟡", "HIGH": "🔴"}
-            icon = risk_icons.get(risk_level, "🟢")
+            icon = risk_icons.get(risk_level, "⚪")
             lines.append(f"{icon} Risk Level: {risk_level}")
         
         # Show detailed dependency breakdown
@@ -293,35 +300,6 @@ class ResultsFormatter:
             
             if len(unused) > 10:
                 lines.append(f"  ... and {len(unused) - 10} more")
-        
-        # Show circular dependencies if available
-        circular = dependency_results.get("circular_dependencies", [])
-        if circular:
-            lines.append(f"\n🔄 CIRCULAR DEPENDENCIES ({len(circular)} found):")
-            for i, cycle in enumerate(circular[:5], 1):
-                if isinstance(cycle, dict) and "cycle" in cycle:
-                    cycle_path = " → ".join(cycle["cycle"] + [cycle["cycle"][0]])
-                    lines.append(f"  {i}. {cycle_path}")
-                else:
-                    lines.append(f"  {i}. {cycle}")
-            
-            if len(circular) > 5:
-                lines.append(f"  ... and {len(circular) - 5} more")
-        
-        # Show top third-party dependencies
-        all_deps = dependency_results.get("all_dependencies", {})
-        if all_deps:
-            third_party_deps = []
-            for name, info in all_deps.items():
-                if isinstance(info, dict) and info.get("is_third_party", False):
-                    third_party_deps.append(name)
-            
-            if third_party_deps and len(third_party_deps) > 0:
-                lines.append(f"\n🌐 KEY THIRD-PARTY DEPENDENCIES:")
-                for dep_name in sorted(third_party_deps)[:15]:
-                    lines.append(f"  • {dep_name}")
-                if len(third_party_deps) > 15:
-                    lines.append(f"  • ... and {len(third_party_deps) - 15} more")
     
     def _format_discovery_section(self, discovery_results: Dict) -> List[str]:
         """Format codebase discovery section."""
@@ -476,3 +454,31 @@ class ResultsTab(ttk.Frame):
     def has_results(self) -> bool:
         """Check if there are results to display."""
         return self.current_results is not None and self.current_results.success
+
+
+# Ensure proper module exports
+__all__ = ['ResultsTab', 'ResultsFormatter', 'SimpleScrollableText', 'SimpleButtonToolbar']
+
+
+if __name__ == "__main__":
+    # Test the component in isolation
+    root = tk.Tk()
+    root.title("Results Tab Test")
+    root.geometry("800x600")
+    
+    # Create a mock status bar
+    class MockStatusBar:
+        """Mock status bar for testing the ResultsTab component."""
+        
+        def set_text(self, text):
+            """Set status text - prints to console for testing."""
+            print(f"Status: {text}")
+    
+    status_bar = MockStatusBar()
+    
+    # Create the results tab
+    results_tab = ResultsTab(root, status_bar)
+    results_tab.pack(fill="both", expand=True)
+    
+    print("ResultsTab test window created successfully!")
+    root.mainloop()
