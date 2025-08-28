@@ -352,9 +352,7 @@ def analyze_codebase(project_path: str) -> DiscoveryResult:
 def create_discovery_report(result: DiscoveryResult) -> str:
     """Create formatted discovery report."""
     lines = [
-        "🗺️ CODEBASE DISCOVERY REPORT",
-        "=" * 50,
-        f"📁 Files analyzed: {result.total_files_analyzed}",
+        "🗺️ CODEBASE DISCOVERY REPORT", "=" * 50, f"📁 Files analyzed: {result.total_files_analyzed}",
         ""
     ]
     

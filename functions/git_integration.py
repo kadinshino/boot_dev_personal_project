@@ -11,7 +11,10 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
-
+# Import Analyzer
+from functions.code_analyzer import analyze_project
+from functions.security_scanner import SecurityScanner
+            
 class GitAnalyzer:
     """Git analyzer with robust error handling."""
     
@@ -103,9 +106,6 @@ class GitAnalyzer:
     def run_pre_commit_analysis(self, config: Optional[Dict[str, Any]] = None) -> int:
         """
         Run pre-commit analysis on staged files.
-        
-        This is the function that git hooks will call.
-        Returns: 0 = success, 1 = warnings, 2 = errors (block commit)
         """
         if not self.is_git_repo():
             print("⚠️  Not a git repository - skipping analysis")
@@ -121,10 +121,7 @@ class GitAnalyzer:
         print(f"🔍 Running pre-commit analysis on {len(staged_files)} files...")
         
         try:
-            # Import and run the analyzer
-            from functions.code_analyzer import analyze_project
-            from functions.security_scanner import SecurityScanner
-            
+
             # Run code analysis
             code_results = analyze_project(str(self.repo_path))
             issues = code_results.get('issues', [])

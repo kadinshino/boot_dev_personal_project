@@ -1,7 +1,9 @@
 """
-Code Analyzer
+Code Analyzer - Fixed File Path Issue
 ============================================================
-Focus: Analyze code and find problems.
+The problem: GUI shows "Unknown:0" while CLI shows correct file paths
+
+Issue: The Issue dataclass uses 'file' but IssueVisitor expects 'file_path'
 """
 
 import ast
@@ -12,10 +14,10 @@ from dataclasses import dataclass
 
 @dataclass
 class Issue:
-    """Simple issue container."""
-    file: str
-    line: int
-    type: str
+    """Simple issue container with CONSISTENT field names."""
+    file_path: str  # Changed from 'file' to 'file_path' for consistency
+    line_number: int  # Changed from 'line' to 'line_number' for consistency  
+    issue_type: str   # Changed from 'type' to 'issue_type' for consistency
     message: str
     severity: str = "warning"
 
@@ -52,13 +54,19 @@ class CodeAnalyzer:
                 self._analyze_file(file_path)
             except Exception as e:
                 self.issues.append(Issue(
-                    file=str(file_path), line=0, type="parse_error",
-                    message=f"Failed to parse: {e}", severity="error"
+                    file_path=str(file_path),  # FIXED: Use full file path
+                    line_number=0, 
+                    issue_type="parse_error",
+                    message=f"Failed to parse: {e}", 
+                    severity="error"
                 ))
         
         return {
             'issues': self.issues,
-            'stats': self.stats,
+            'total_files': self.stats['files'],
+            'total_functions': self.stats['functions'], 
+            'total_classes': self.stats['classes'],
+            'total_lines': self.stats['lines'],
             'project_path': str(path),
             'files_analyzed': len(python_files)
         }
@@ -89,7 +97,7 @@ class CodeAnalyzer:
         
         try:
             tree = ast.parse(content, filename=str(file_path))
-            visitor = IssueVisitor(str(file_path))
+            visitor = IssueVisitor(str(file_path))  # FIXED: Pass full path
             visitor.visit(tree)
             
             # Collect results
@@ -99,8 +107,11 @@ class CodeAnalyzer:
             
         except SyntaxError as e:
             self.issues.append(Issue(
-                file=str(file_path), line=e.lineno or 0, type="syntax_error",
-                message=f"Syntax error: {e.msg}", severity="error"
+                file_path=str(file_path),  # FIXED: Use full file path
+                line_number=e.lineno or 0, 
+                issue_type="syntax_error",
+                message=f"Syntax error: {e.msg}", 
+                severity="error"
             ))
 
 
@@ -108,7 +119,7 @@ class IssueVisitor(ast.NodeVisitor):
     """AST visitor that finds code issues."""
     
     def __init__(self, file_path: str):
-        self.file_path = file_path
+        self.file_path = file_path  # Store the full file path
         self.issues: List[Issue] = []
         self.function_count = 0
         self.class_count = 0
@@ -148,7 +159,9 @@ class IssueVisitor(ast.NodeVisitor):
         # Missing docstring
         if not ast.get_docstring(node) and not name.startswith('_'):
             self.issues.append(Issue(
-                file=self.file_path, line=node.lineno, type="missing_docstring",
+                file_path=self.file_path,  # FIXED: Use stored file path
+                line_number=node.lineno, 
+                issue_type="missing_docstring",
                 message=f"Function '{name}' missing docstring"
             ))
         
@@ -156,7 +169,9 @@ class IssueVisitor(ast.NodeVisitor):
         arg_count = len(node.args.args)
         if arg_count > CONFIG['max_function_args']:
             self.issues.append(Issue(
-                file=self.file_path, line=node.lineno, type="too_many_args",
+                file_path=self.file_path,  # FIXED: Use stored file path
+                line_number=node.lineno, 
+                issue_type="too_many_args",
                 message=f"Function '{name}' has {arg_count} args (max: {CONFIG['max_function_args']})"
             ))
         
@@ -165,7 +180,9 @@ class IssueVisitor(ast.NodeVisitor):
             length = node.end_lineno - node.lineno
             if length > CONFIG['max_function_length']:
                 self.issues.append(Issue(
-                    file=self.file_path, line=node.lineno, type="long_function",
+                    file_path=self.file_path,  # FIXED: Use stored file path
+                    line_number=node.lineno, 
+                    issue_type="long_function",
                     message=f"Function '{name}' is {length} lines (max: {CONFIG['max_function_length']})",
                     severity="info"
                 ))
@@ -177,7 +194,9 @@ class IssueVisitor(ast.NodeVisitor):
         # Missing docstring
         if not ast.get_docstring(node):
             self.issues.append(Issue(
-                file=self.file_path, line=node.lineno, type="missing_docstring",
+                file_path=self.file_path,  # FIXED: Use stored file path
+                line_number=node.lineno, 
+                issue_type="missing_docstring",
                 message=f"Class '{name}' missing docstring"
             ))
         
@@ -187,7 +206,9 @@ class IssueVisitor(ast.NodeVisitor):
         
         if method_count > CONFIG['max_class_methods']:
             self.issues.append(Issue(
-                file=self.file_path, line=node.lineno, type="too_many_methods",
+                file_path=self.file_path,  # FIXED: Use stored file path
+                line_number=node.lineno, 
+                issue_type="too_many_methods",
                 message=f"Class '{name}' has {method_count} methods (max: {CONFIG['max_class_methods']})"
             ))
 
@@ -202,12 +223,11 @@ def analyze_project(project_path: str) -> Dict[str, Any]:
 def format_summary(results: Dict[str, Any]) -> str:
     """Create simple text summary."""
     issues = results['issues']
-    stats = results['stats']
     
     lines = [
         f"Code Analysis Results",
         f"=====================",
-        f"Files: {stats['files']} | Functions: {stats['functions']} | Classes: {stats['classes']}",
+        f"Files: {results.get('total_files', 0)} | Functions: {results.get('total_functions', 0)} | Classes: {results.get('total_classes', 0)}",
         f"Issues: {len(issues)} total",
         ""
     ]
@@ -235,9 +255,9 @@ def format_summary(results: Dict[str, Any]) -> str:
     
     # Show first 10 issues
     for i, issue in enumerate(issues[:10], 1):
-        file_name = Path(issue.file).name
+        file_name = Path(issue.file_path).name
         lines.append(f"{i}. {issue.severity.upper()}: {issue.message}")
-        lines.append(f"   📄 {file_name}:{issue.line}")
+        lines.append(f"   📄 {file_name}:{issue.line_number}")
     
     if len(issues) > 10:
         lines.append(f"... and {len(issues) - 10} more issues")
