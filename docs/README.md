@@ -1,4 +1,4 @@
-# Enhanced Code Analyzer
+# Python Code Analyzer
 
 A Python development tool that analyzes code quality, security vulnerabilities, dependencies, and project structure through both GUI and CLI interfaces.
 
