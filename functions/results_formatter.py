@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Dict, List, Any
 from functions.analysis_controller import AnalysisResults
 
-
 def format_results_for_display(results: AnalysisResults) -> str:
     """Format results for display in GUI or CLI."""
     if not results or not results.success:
@@ -25,28 +24,23 @@ def format_results_for_display(results: AnalysisResults) -> str:
     ]
     
     # Add sections based on what was actually analyzed
-    sections_added = 0
-    
+    sections_added = 0  
     # Code Analysis section
     if "total_files" in results.results:
         lines.extend(_format_code_analysis_section(results.results))
-        sections_added += 1
-    
+        sections_added += 1    
     # Security Analysis section  
     if "security_scan" in results.results:
         lines.extend(_format_security_section(results.results["security_scan"]))
-        sections_added += 1
-    
+        sections_added += 1    
     # Dependency Analysis section
     if "dependencies" in results.results:
         lines.extend(_format_dependency_section(results.results["dependencies"]))
-        sections_added += 1
-    
+        sections_added += 1    
     # Codebase Discovery section
     if "legacy_analysis" in results.results:
         lines.extend(_format_discovery_section(results.results["legacy_analysis"]))
-        sections_added += 1
-    
+        sections_added += 1    
     # Git Integration section
     if "git_info" in results.results:
         lines.extend(_format_git_section(results.results["git_info"]))
@@ -60,8 +54,7 @@ def format_results_for_display(results: AnalysisResults) -> str:
     ])
     
     # Add recommendations
-    lines.extend(_format_recommendations(results.issues))
-    
+    lines.extend(_format_recommendations(results.issues))    
     return "\n".join(lines)
 
 
