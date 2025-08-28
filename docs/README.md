@@ -145,7 +145,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## 👨‍💻 About
 
 **Created by:** Kadin Shino  
-**Project Type:** Boot.dev Capstone Project  
+**Project Type:** Boot.dev Personal Project  
 **GitHub:** [boot_dev_personal_project](https://github.com/kadinshino/boot_dev_personal_project)
 
 *Built as a comprehensive milestone project demonstrating Python development skills, software architecture, and practical tool creation.*
