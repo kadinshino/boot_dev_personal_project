@@ -1,7 +1,7 @@
 """
 Issues Formatter
 ================
-Handles all issues display and filtering logic - separated from GUI
+Handles all issues display and filtering logic
 """
 
 from pathlib import Path

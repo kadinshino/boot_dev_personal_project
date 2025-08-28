@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Entry Point - Simple and Clean
+Entry Point
 """
 
 import sys

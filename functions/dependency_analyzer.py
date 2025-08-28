@@ -1,7 +1,7 @@
 """
-Streamlined Dependency Analyzer - Simple tkinter alias fix
+Streamlined Dependency Analyzer
 ========================================================
-Purpose: Analyze dependencies with just the tkinter alias fix, no other changes
+Purpose: Analyze dependencies
 """
 
 import ast

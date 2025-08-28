@@ -1,7 +1,6 @@
 """
-Refactored Code Analyzer GUI - Main Application
+Code Analyzer GUI
 ==============================================
-Simplified main class that delegates to specialized components
 """
 
 import tkinter as tk

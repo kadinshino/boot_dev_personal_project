@@ -1,7 +1,6 @@
 """
 Lightweight Results Tab Component
 ================================
-Much simpler - uses existing GUI components and delegates formatting
 """
 
 import tkinter as tk

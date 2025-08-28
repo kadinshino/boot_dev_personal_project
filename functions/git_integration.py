@@ -1,10 +1,7 @@
-# functions/git_integration.py
-
 """
 Git Integration Module for Code Analyzer 
 
 """
-
 import subprocess
 import shutil
 from pathlib import Path

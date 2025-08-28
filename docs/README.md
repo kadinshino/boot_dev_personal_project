@@ -1,6 +1,6 @@
 # Python Code Analyzer
 
-A Python development tool that analyzes code quality, security vulnerabilities, dependencies, and project structure through both GUI and CLI interfaces.
+A comprehensive Python development tool that analyzes code quality, security vulnerabilities, dependencies, and project structure through both GUI and CLI interfaces.
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg) ![Tkinter](https://img.shields.io/badge/GUI-Tkinter-green.svg) ![License](https://img.shields.io/badge/license-MIT-purple.svg)
 
@@ -64,7 +64,7 @@ python main.py --analyze ./my_project --save report.txt
 
 ---
 
-## 📊 What It Analyzes
+## 🔍 What It Analyzes
 
 | Module | What It Finds | Example Issues |
 |--------|---------------|----------------|
@@ -80,25 +80,32 @@ python main.py --analyze ./my_project --save report.txt
 
 ```
 enhanced-code-analyzer/
-├── main.py                  # Application entry point
-├── functions/               # Analysis modules
-│   ├── analysis_controller.py
-│   ├── code_analyzer.py
-│   ├── security_scanner.py
-│   ├── dependency_analyzer.py
-│   ├── codebase_discovery.py
-│   └── git_integration.py
-├── gui/                     # GUI components  
-│   ├── analyzer_gui.py
-│   ├── setup_tab.py
-│   ├── results_tab.py
-│   └── issues_tab.py
-├── cli/                     # CLI interface
-│   └── command_handler.py
-└── docs/                    # Documentation
-    ├── user-guide.md
-    ├── api-reference.md
-    └── architecture.md
+├── main.py                     # Application entry point
+├── functions/                  # Analysis modules
+│   ├── analysis_controller.py  # Main orchestration logic
+│   ├── code_analyzer.py        # Code quality analysis
+│   ├── security_scanner.py     # Security vulnerability detection
+│   ├── dependency_analyzer.py  # Import and dependency analysis
+│   ├── codebase_discovery.py   # Project structure discovery
+│   ├── git_integration.py      # Git repository integration
+│   ├── issues_formatter.py     # Issue display formatting
+│   └── results_formatter.py    # Result display formatting
+├── gui/                        # GUI components  
+│   ├── analyzer_gui.py         # Main GUI application
+│   ├── gui_components.py       # Reusable UI components
+│   ├── setup_tab.py           # Project setup interface
+│   ├── results_tab.py         # Analysis results display
+│   └── issues_tab.py          # Issue filtering and search
+├── cli/                        # CLI interface
+│   └── command_handler.py      # Command line processing
+├── utils/                      # Shared utilities
+│   ├── codebase_patterns.py   # Framework detection patterns
+│   ├── security_patterns.py   # Security vulnerability patterns
+│   └── generate_hook.py       # Git hook generation
+└── docs/                       # Documentation
+    ├── user-guide.md          # Usage instructions
+    ├── api-reference.md       # Developer reference
+    └── architecture.md        # System design overview
 ```
 
 ---
@@ -129,10 +136,34 @@ enhanced-code-analyzer/
   🟡 Medium: 2
   🔵 Low: 1
 
-📋 NEXT STEPS:
+💡 NEXT STEPS:
 🟡 Consider fixing 2 warnings for better code quality
 📊 Check the Issues tab for detailed information
 ```
+
+---
+
+## 🛠️ Development
+
+### **Architecture**
+The application follows a clean MVC-inspired architecture:
+
+- **Entry Point** (`main.py`) - Simple routing between GUI/CLI
+- **Business Logic** (`functions/`) - Core analysis engines
+- **Presentation** (`gui/`, `cli/`) - User interfaces
+- **Utilities** (`utils/`) - Shared patterns and helpers
+
+### **Adding New Analyzers**
+1. Create new analyzer in `functions/`
+2. Follow the standard interface pattern
+3. Register in `analysis_controller.py`
+4. Add CLI command in `command_handler.py`
+
+### **Contributing**
+1. Fork the repository
+2. Create a feature branch
+3. Run the analyzer on your code changes
+4. Submit a pull request
 
 ---
 
@@ -146,6 +177,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 **Created by:** Kadin Shino  
 **Project Type:** Boot.dev Personal Project  
-**GitHub:** [boot_dev_personal_project](https://github.com/kadinshino/boot_dev_personal_project)
+**GitHub:** [enhanced-code-analyzer](https://github.com/kadinshino/boot_dev_personal_project)
 
 *Built as a comprehensive milestone project demonstrating Python development skills, software architecture, and practical tool creation.*

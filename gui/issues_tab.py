@@ -1,7 +1,6 @@
 """
 Lightweight Issues Tab Component
 ==============================
-Much simpler - uses existing GUI components and delegates business logic
 """
 
 import tkinter as tk

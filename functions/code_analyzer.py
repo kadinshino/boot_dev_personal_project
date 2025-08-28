@@ -1,9 +1,6 @@
 """
-Code Analyzer - Fixed File Path Issue
+Code Analyzer
 ============================================================
-The problem: GUI shows "Unknown:0" while CLI shows correct file paths
-
-Issue: The Issue dataclass uses 'file' but IssueVisitor expects 'file_path'
 """
 
 import ast

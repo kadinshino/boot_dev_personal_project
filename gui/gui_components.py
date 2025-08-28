@@ -1,7 +1,6 @@
 """
-Fixed GUI Components - Circular Import Solution
+GUI Components
 ==============================================
-Simplified to avoid circular import issues while maintaining compatibility
 """
 
 import tkinter as tk

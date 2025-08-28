@@ -1,7 +1,6 @@
 """
-Setup Tab Component - Fixed Import Structure
+Setup Tab Component
 ==========================================
-Removed circular imports and made imports more explicit
 """
 
 import tkinter as tk

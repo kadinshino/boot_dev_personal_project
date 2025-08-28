@@ -1,7 +1,7 @@
 """
 Results Formatter
 =================
-Handles all result display formatting logic - separated from controller
+Handles all result display formatting logic
 """
 
 from pathlib import Path
