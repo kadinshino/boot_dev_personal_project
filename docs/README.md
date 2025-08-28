@@ -20,6 +20,21 @@ A comprehensive Python development tool that analyzes code quality, security vul
 
 ---
 
+
+## 🖼️ Screenshots
+---
+
+![Main Interface](docs/Example_Image_01.png)
+*Main analysis setup interface with module selection*
+
+![Results View](docs/Example_Image_02.png)
+*Comprehensive analysis results with detailed reporting*
+
+![Issues Tab](docs/Example_Image_03.png)
+*Issue filtering and search functionality*
+
+---
+
 ## 🚀 Quick Start
 
 ### **Installation**
